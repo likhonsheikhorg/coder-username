@@ -5,68 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coder Username Generator</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdn.lineicons.com/3.0/lineicons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --tg-theme-bg-color: #1e1e1e;
-            --tg-theme-text-color: #ffffff;
-            --tg-theme-hint-color: #888888;
-            --tg-theme-link-color: #3390ec;
-            --tg-theme-button-color: #3390ec;
-            --tg-theme-button-text-color: #ffffff;
+            --primary-color: #4a4feb;
+            --secondary-color: #30cfd0;
+            --bg-color: #0a0a1f;
+            --text-color: #ffffff;
+            --card-bg-color: #1a1a2e;
         }
 
         body {
-            font-family: 'Roboto Mono', monospace;
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
         }
 
         .container {
             width: 100%;
             max-width: 400px;
+            background: var(--card-bg-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            color: var(--tg-theme-button-color);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             font-size: 2.5rem;
-            text-shadow: 0 0 10px rgba(51, 144, 236, 0.5);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 5s ease infinite;
         }
 
-        .input, .button {
-            font-family: 'Roboto Mono', monospace;
-            border-radius: 8px;
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
 
-        .input {
+        input {
             background-color: rgba(255, 255, 255, 0.1);
-            color: var(--tg-theme-text-color);
-            border: 1px solid var(--tg-theme-hint-color);
+            color: var(--text-color);
         }
 
-        .button {
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
-            border: none;
+        button {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
+            cursor: pointer;
+            font-weight: 600;
         }
 
-        .button:hover {
+        button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(51, 144, 236, 0.3);
+            box-shadow: 0 5px 15px rgba(74, 79, 235, 0.4);
         }
 
         #result {
@@ -74,21 +80,9 @@
             text-align: center;
             font-size: 1.2rem;
             font-weight: bold;
-        }
-
-        .contribute {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .contribute a {
-            color: var(--tg-theme-link-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .contribute a:hover {
-            color: #ffffff;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
         }
 
         .history {
@@ -96,7 +90,7 @@
         }
 
         .history h3 {
-            color: var(--tg-theme-button-color);
+            color: var(--secondary-color);
         }
 
         .history ul {
@@ -105,64 +99,64 @@
         }
 
         .history li {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
             transition: all 0.3s ease;
         }
 
         .history li:hover {
+            background: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
         }
 
-        .icon {
-            margin-right: 5px;
+        .popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
         }
 
-        @keyframes glow {
-            0% { text-shadow: 0 0 5px rgba(51, 144, 236, 0.5); }
-            50% { text-shadow: 0 0 20px rgba(51, 144, 236, 0.8); }
-            100% { text-shadow: 0 0 5px rgba(51, 144, 236, 0.5); }
+        .popup button {
+            margin-top: 10px;
         }
 
-        .glow {
-            animation: glow 2s ease-in-out infinite;
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="glow animate__animated animate__fadeIn">Coder Username Generator</h1>
-        <div class="field">
-            <div class="control has-icons-left">
-                <input class="input is-medium" type="text" id="inputWord" placeholder="Enter a word (optional)">
-                <span class="icon is-left">
-                    <i class="lni lni-keyword-research"></i>
-                </span>
-            </div>
-        </div>
-        <button class="button is-fullwidth is-medium animate__animated animate__pulse" onclick="generateUsername()">
-            <span class="icon"><i class="lni lni-cog"></i></span>
-            <span>Generate Username</span>
-        </button>
-        <button class="button is-fullwidth is-medium is-light animate__animated animate__pulse" onclick="generateRandomUsername()">
-            <span class="icon"><i class="lni lni-shuffle"></i></span>
-            <span>Random Username</span>
-        </button>
-        <div id="result" class="animate__animated animate__fadeIn"></div>
+        <h1>Coder Username Generator</h1>
+        <input type="text" id="inputWord" placeholder="Enter a word (optional)">
+        <button onclick="generateUsername()"><i class="fas fa-magic"></i> Generate Username</button>
+        <button onclick="generateRandomUsername()"><i class="fas fa-random"></i> Random Username</button>
+        <div id="result"></div>
         <div class="history">
-            <h3 class="is-size-4">Recent Usernames</h3>
+            <h3>Recent Usernames</h3>
             <ul id="historyList"></ul>
         </div>
-        <div class="contribute">
-            <a href="https://github.com/likhonsheikhorg/coder-username/" target="_blank" class="animate__animated animate__pulse">
-                <span class="icon"><i class="lni lni-github-original"></i></span>
-                <span>Contribute on GitHub</span>
-            </a>
-        </div>
+    </div>
+
+    <div class="popup" id="channelPopup">
+        <p>Join our Telegram channels for more cool stuff!</p>
+        <button onclick="joinChannel('https://t.me/likhondotxyz')"><i class="fab fa-telegram"></i> Join LikhonDotXYZ</button>
+        <button onclick="joinChannel('https://t.me/VorTexCyberSecurity')"><i class="fab fa-telegram"></i> Join VorTexCyberSecurity</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         let history = [];
+        let channelsJoined = 0;
 
         tg.expand();
         tg.MainButton.setText('CLOSE').show().onClick(() => tg.close());
@@ -185,33 +179,46 @@
         }
 
         function generateUsername() {
-            const input = document.getElementById('inputWord').value;
-            const word = input.trim() || getRandomWord();
+            let input = document.getElementById('inputWord').value.trim();
+            input = input.replace(/\s+/g, '_');
+            const word = input || getRandomWord();
             const username = toLeetSpeak(word);
             displayResult(username);
+            suggestAlternatives(word);
         }
 
         function generateRandomUsername() {
             const username = toLeetSpeak(getRandomWord());
             displayResult(username);
+            suggestAlternatives(username);
         }
 
         function displayResult(username) {
             document.getElementById('result').innerHTML = `
-                <div class="box animate__animated animate__fadeIn">
-                    <p>Generated: <strong id="username">${username}</strong></p>
-                    <button class="button is-small is-info" onclick="copyToClipboard()">
-                        <span class="icon"><i class="lni lni-clipboard"></i></span>
-                        <span>Copy</span>
-                    </button>
-                </div>
+                <p>Generated: <strong>${username}</strong></p>
+                <button onclick="copyToClipboard('${username}')"><i class="fas fa-copy"></i> Copy</button>
             `;
             addToHistory(username);
+            showChannelPopup();
         }
 
-        function copyToClipboard() {
-            const username = document.getElementById('username').textContent;
-            navigator.clipboard.writeText(username).then(() => {
+        function suggestAlternatives(baseWord) {
+            const alternatives = [
+                `${baseWord}_dev`,
+                `${baseWord}Pro`,
+                `${baseWord}${Math.floor(Math.random() * 1000)}`,
+                `the_${baseWord}`,
+                `${baseWord}Master`
+            ];
+            const suggestionsList = alternatives.map(alt => `<li>${toLeetSpeak(alt)}</li>`).join('');
+            document.getElementById('result').innerHTML += `
+                <p>Suggested alternatives:</p>
+                <ul>${suggestionsList}</ul>
+            `;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
                 tg.showAlert('Username copied to clipboard!');
             });
         }
@@ -225,11 +232,22 @@
         function updateHistoryDisplay() {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = history.map(name => `
-                <li class="animate__animated animate__fadeIn">
-                    <span class="icon"><i class="lni lni-user"></i></span>
-                    ${name}
-                </li>
+                <li><i class="fas fa-user"></i> ${name}</li>
             `).join('');
+        }
+
+        function showChannelPopup() {
+            if (channelsJoined < 2) {
+                document.getElementById('channelPopup').style.display = 'block';
+            }
+        }
+
+        function joinChannel(url) {
+            window.open(url, '_blank');
+            channelsJoined++;
+            if (channelsJoined >= 2) {
+                document.getElementById('channelPopup').style.display = 'none';
+            }
         }
 
         // Inform the Telegram app that the Web App is ready to be displayed
