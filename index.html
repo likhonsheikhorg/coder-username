@@ -3,21 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coder Username Generator</title>
+    <title>Advanced Coder Username Generator</title>
+    <meta name="description" content="Generate unique and cool usernames for coders and developers.">
+    <meta property="og:title" content="Advanced Coder Username Generator">
+    <meta property="og:description" content="Create unique usernames with our advanced generator. Perfect for coders and developers!">
+    <meta property="og:image" content="https://example.com/og-image.jpg">
+    <meta property="og:url" content="https://your-deployment-url.vercel.app">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Advanced Coder Username Generator">
+    <meta name="twitter:description" content="Create unique usernames with our advanced generator. Perfect for coders and developers!">
+    <meta name="twitter:image" content="https://example.com/twitter-image.jpg">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a4feb;
-            --secondary-color: #30cfd0;
-            --bg-color: #0a0a1f;
-            --text-color: #ffffff;
-            --card-bg-color: #1a1a2e;
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --card-bg-color: #1e293b;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -31,7 +40,7 @@
 
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             background: var(--card-bg-color);
             border-radius: 20px;
             padding: 30px;
@@ -48,7 +57,7 @@
             animation: gradient 5s ease infinite;
         }
 
-        input, button {
+        input, button, select {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -58,7 +67,7 @@
             transition: all 0.3s ease;
         }
 
-        input {
+        input, select {
             background-color: rgba(255, 255, 255, 0.1);
             color: var(--text-color);
         }
@@ -72,7 +81,7 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(74, 79, 235, 0.4);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
         }
 
         #result {
@@ -104,6 +113,9 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .history li:hover {
@@ -113,14 +125,16 @@
 
         .popup {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: var(--card-bg-color);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             display: none;
             z-index: 1000;
+            text-align: center;
         }
 
         .popup button {
@@ -132,12 +146,45 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Coder Username Generator</h1>
+        <h1>Advanced Coder Username Generator</h1>
         <input type="text" id="inputWord" placeholder="Enter a word (optional)">
+        <select id="styleSelect">
+            <option value="leet">Leet Speak</option>
+            <option value="camelCase">Camel Case</option>
+            <option value="snakeCase">Snake Case</option>
+            <option value="kebabCase">Kebab Case</option>
+        </select>
         <button onclick="generateUsername()"><i class="fas fa-magic"></i> Generate Username</button>
         <button onclick="generateRandomUsername()"><i class="fas fa-random"></i> Random Username</button>
         <div id="result"></div>
@@ -149,14 +196,12 @@
 
     <div class="popup" id="channelPopup">
         <p>Join our Telegram channels for more cool stuff!</p>
-        <button onclick="joinChannel('https://t.me/likhondotxyz')"><i class="fab fa-telegram"></i> Join LikhonDotXYZ</button>
-        <button onclick="joinChannel('https://t.me/VorTexCyberSecurity')"><i class="fab fa-telegram"></i> Join VorTexCyberSecurity</button>
+        <button onclick="joinChannels()"><i class="fab fa-telegram"></i> Join Our Channels</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         let history = [];
-        let channelsJoined = 0;
 
         tg.expand();
         tg.MainButton.setText('CLOSE').show().onClick(() => tg.close());
@@ -174,23 +219,48 @@
             return word.toLowerCase().split('').map(char => leet[char] || char).join('');
         }
 
+        function toCamelCase(word) {
+            return word.replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) => 
+                index === 0 ? letter.toLowerCase() : letter.toUpperCase()
+            ).replace(/\s+/g, '');
+        }
+
+        function toSnakeCase(word) {
+            return word.replace(/\s+/g, '_').toLowerCase();
+        }
+
+        function toKebabCase(word) {
+            return word.replace(/\s+/g, '-').toLowerCase();
+        }
+
         function getRandomWord() {
             return words[Math.floor(Math.random() * words.length)];
         }
 
+        function applyStyle(word, style) {
+            switch(style) {
+                case 'leet': return toLeetSpeak(word);
+                case 'camelCase': return toCamelCase(word);
+                case 'snakeCase': return toSnakeCase(word);
+                case 'kebabCase': return toKebabCase(word);
+                default: return word;
+            }
+        }
+
         function generateUsername() {
             let input = document.getElementById('inputWord').value.trim();
-            input = input.replace(/\s+/g, '_');
-            const word = input || getRandomWord();
-            const username = toLeetSpeak(word);
+            const style = document.getElementById('styleSelect').value;
+            input = input || getRandomWord();
+            const username = applyStyle(input, style);
             displayResult(username);
-            suggestAlternatives(word);
+            suggestAlternatives(input, style);
         }
 
         function generateRandomUsername() {
-            const username = toLeetSpeak(getRandomWord());
+            const style = document.getElementById('styleSelect').value;
+            const username = applyStyle(getRandomWord(), style);
             displayResult(username);
-            suggestAlternatives(username);
+            suggestAlternatives(username, style);
         }
 
         function displayResult(username) {
@@ -202,15 +272,15 @@
             showChannelPopup();
         }
 
-        function suggestAlternatives(baseWord) {
+        function suggestAlternatives(baseWord, style) {
             const alternatives = [
-                `${baseWord}_dev`,
-                `${baseWord}Pro`,
-                `${baseWord}${Math.floor(Math.random() * 1000)}`,
-                `the_${baseWord}`,
-                `${baseWord}Master`
+                applyStyle(`${baseWord}Dev`, style),
+                applyStyle(`${baseWord}Pro`, style),
+                applyStyle(`${baseWord}${Math.floor(Math.random() * 1000)}`, style),
+                applyStyle(`The${baseWord}`, style),
+                applyStyle(`${baseWord}Master`, style)
             ];
-            const suggestionsList = alternatives.map(alt => `<li>${toLeetSpeak(alt)}</li>`).join('');
+            const suggestionsList = alternatives.map(alt => `<li>${alt}</li>`).join('');
             document.getElementById('result').innerHTML += `
                 <p>Suggested alternatives:</p>
                 <ul>${suggestionsList}</ul>
@@ -232,21 +302,34 @@
         function updateHistoryDisplay() {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = history.map(name => `
-                <li><i class="fas fa-user"></i> ${name}</li>
+                <li>
+                    <span>${name}</span>
+                    <div class="tooltip">
+                        <button onclick="copyToClipboard('${name}')"><i class="fas fa-copy"></i></button>
+                        <span class="tooltiptext">Copy</span>
+                    </div>
+                </li>
             `).join('');
         }
 
         function showChannelPopup() {
-            if (channelsJoined < 2) {
+            if (!localStorage.getItem('channelsJoined')) {
                 document.getElementById('channelPopup').style.display = 'block';
             }
         }
 
-        function joinChannel(url) {
-            window.open(url, '_blank');
-            channelsJoined++;
-            if (channelsJoined >= 2) {
-                document.getElementById('channelPopup').style.display = 'none';
+        function joinChannels() {
+            window.open('https://t.me/likhondotxyz', '_blank');
+            window.open('https://t.me/VorTexCyberSecurity', '_blank');
+            localStorage.setItem('channelsJoined', 'true');
+            document.getElementById('channelPopup').style.display = 'none';
+        }
+
+        // Show popup when page loads if it's the first visit
+        window.onload = function() {
+            if (!localStorage.getItem('firstVisit')) {
+                showChannelPopup();
+                localStorage.setItem('firstVisit', 'true');
             }
         }
 
